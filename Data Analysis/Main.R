@@ -49,10 +49,11 @@ dfExperience <- as.data.frame(dfExperience)
 #RRData <- df[,substr(names(df), 1,10) == 'RR']
 
 p <- likert(dfLikertRR)
+
+figureName <- "../Figures/LikertPlots.pdf"
+pdf(figureName)
 plot(p)
-
-
-
+dev.off()
 
 
 
@@ -115,6 +116,7 @@ dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("Senio
 plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
 figureName <- "../Figures/ExperienceLevels.pdf"
+ggsave(figureName)
 
 
 ### Analysis #2: Is the attitude towards RRs influenced by the number of already submitted pre-registration?
@@ -147,34 +149,19 @@ questionList <- c("LikertRRHelpful","LikertRRReviewerWilling","LikertRRAuthorWil
 
 for(i in 1:nbLikertItems){
   question <- questionList[i]
-  analysisdata$question = c(analysisdata$question,question,question,question)
-  analysisdata$name = c(analysisdata$name,"Senior","Middle","Young")
-  analysisdata$pointEstimate = c(analysisdata$pointEstimate,seniorData[i,1],midData[i,1],youngData[i,1])
-  analysisdata$ci.max = c(analysisdata$ci.max,seniorData[i,3],midData[i,3], youngData[i,3])
-  analysisdata$ci.min = c(analysisdata$ci.min,seniorData[i,2],midData[i,2], youngData[i,2])
+  analysisdata$question = c(analysisdata$question,question,question,question,question)
+  analysisdata$name = c(analysisdata$name,"manyPreregs","somePreregs","fewPreregs","noPreregs")
+  analysisdata$pointEstimate = c(analysisdata$pointEstimate,manyPreregsData[i,1],somePreregsData[i,1],fewPreregsData[i,1],noPreregData[i,1])
+  analysisdata$ci.max = c(analysisdata$ci.max,manyPreregsData[i,3],somePreregsData[i,3], fewPreregsData[i,3],noPreregData[i,3])
+  analysisdata$ci.min = c(analysisdata$ci.min,manyPreregsData[i,2],somePreregsData[i,2], fewPreregsData[i,2],noPreregData[i,2])
 }
 
 dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
 colnames(dataToPrint) <- c("legend_factor", "y_axis_items","measure", "lowerBound_CI", "upperBound_CI")
 dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = c("LikertRRHelpful", "LikertRRReviewerWilling", "LikertRRAuthorWilling", "LikertRRInterested"))
-dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("Senior", "Middle", "Young"))
+dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("manyPreregs", "somePreregs", "fewPreregs","noPreregs"))
 plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
-figureName <- "../Figures/ExperienceLevels.pdf"
 
-
-
-
-
-
-analysisdata$question = c("Q1","Q1","Q1","Q2","Q2","Q2","Q3","Q3","Q3","Q4","Q4","Q4")
-analysisdata$name = c("G1","G2","G3","G1","G2","G3","G1","G2","G3","G1","G2","G3")
-analysisdata$pointEstimate = c(1,2,3,1,2,3,1,2,3,1,2,3)
-analysisdata$ci.max = c(2,3,4,2,3,4,2,3,4,2,3,4)
-analysisdata$ci.min = c(0,1,2,0,1,2,0,1,2,0,1,2)
-
-dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
-colnames(dataToPrint) <- c("legend_factor", "y_axis_items","measure", "lowerBound_CI", "upperBound_CI")
-dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = c("Q4", "Q3", "Q2", "Q1"))
-dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("G3", "G1", "G2"))
-plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5) 
+figureName <- "../Figures/PreregsLevels.pdf"
+ggsave(figureName)
