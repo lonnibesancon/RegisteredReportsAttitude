@@ -86,13 +86,13 @@ seniorResearcher <- dfLikertRR[dfLikertRR$Experience == "> 10 years",]
 youngData <- data.frame()
 youngData <- bootstrapMeanCI(youngResearcher[,indexOfLikertData])
 midData <- data.frame()
-midData = bootstrapMeanCI(midResearcher[,3])
+midData = bootstrapMeanCI(midResearcher[,indexOfLikertData])
 seniorData <- data.frame()
-seniorData = bootstrapMeanCI(seniorResearcher[,3])
+seniorData = bootstrapMeanCI(seniorResearcher[,indexOfLikertData])
 analysisdata <- c()
 question <- c()
 
-for (i in 3:5){
+for (i in (indexOfLikertData+1):6){
   youngData <- rbind(youngData,(bootstrapMeanCI(youngResearcher[,i])))
   midData <- rbind(midData,(bootstrapMeanCI(midResearcher[,i])))
   seniorData <- rbind(seniorData,(bootstrapMeanCI(seniorResearcher[,i])))
@@ -138,7 +138,7 @@ manyPreregsData = bootstrapMeanCI(manyPreregs[,indexOfLikertData])
 analysisdata <- c()
 question <- c()
 
-for (i in 3:5){
+for (i in (indexOfLikertData+1):6){
   noPreregData <- rbind(noPreregData,(bootstrapMeanCI(noPreregs[,i])))
   fewPreregsData <- rbind(fewPreregsData,(bootstrapMeanCI(fewPreregs[,i])))
   somePreregsData <- rbind(somePreregsData,(bootstrapMeanCI(somePreregs[,i])))
