@@ -1,0 +1,375 @@
+########################################################################################
+# Planned Analysis used to analyse the dataTimeTime gathered by the experiment
+# Submitted to the preregistration of the experiment for the first level of granularity
+# All analysis presented in this file will be put in the paper
+# Presentation modifications (colors, labels of techniques, axis min and max) could be
+# done once the data have been acquired.
+# Lonni Besançon CC-BY-SA, 2019
+########################################################################################
+
+if (!require("plyr")) {
+  install.packages("plyr")
+  library(plyr)
+}
+
+source("HelperFunctionsCIs.R")
+source("HelperFunctionsPlot.R")
+source("HelperFunctions.R")
+
+######################
+# Data Reading
+#####################
+
+dataTime <- readFilesInDirectory("../Data/Time/", "*.csv")
+dataAccuracy <- readFilesInDirectory("../Data/Accuracy/","*.csv")
+dataDemographics <- readFilesInDirectory("../Data/Demographics/","*.csv")
+dataRanking <- readFilesInDirectory("../Data/Ranking/","*.csv")
+NbTechniques <- 4
+nbQuestions <- 5
+questionList <- c("Q1","Q2","Q3","Q4","Q5")
+
+
+######################
+# Exclusion of participants
+#####################
+# First we need to remove participants that should be excluded
+# Such participants are defined by having at least of of these properties in their data
+# 1/ Nonsensical demographics. Demographics consists of age, reported gender and last diploma obtained.
+#    If the age is under 18 or not a numerical value, we consider the demographics as nonsensical.
+# 2/ Data shows that the participant rushed through the experiment. This is defined as taking less than 
+#    exclusionRatio = 3 seconds to reply to a question. If this happened more than twice we remove that participant.
+#    This value of exclusionRatio could be subject to modifications once the data have been acquired.
+
+
+# 1/ First we check the demographics and create a list of all the ids with nonsensical data
+# Then we remove them from all the other dataframes
+listOfIds <- list()
+
+for (i in 1:nrow(dataDemographics)){
+  if(is.na(as.numeric(dataDemographics$Age[i]))){
+    listOfIds <- c(listOfIds, dataDemographics$ids[i])
+  }
+  else{
+    if(as.numeric(dataDemographics$Age[i]) < 18){
+      listOfIds <- c(listOfIds, dataDemographics$ids[i])
+    }
+  }
+}
+
+if(length(listOfIds)!=0){
+  for(i in 1:length(listOfIds)){
+    id <- listOfIds[[i]]
+    dataDemographics <- dataDemographics[dataDemographics$ids!=id, ]
+    dataTime <- dataTime[dataTime$ids!=id, ]
+    dataAccuracy <- dataAccuracy[dataAccuracy$ids!=id, ]
+  }
+}
+
+
+# 2/ Now we check against the time from the pilot
+# First we get all the time from the pilot and get the mean completion time for each technique and visualization 
+# then we compare to see if the data from 1 participant show that they took less than "exclusionRatio" of the time pilots took.
+# If they did take less time than that for more than two questions, they will be excluded.
+# If they did, we save their ID and exclude them from the rest of the analysis
+
+listOfIds <- list()
+exclusionRatio <- 3
+for (i in 1:length(dataTime)){
+  counterExclusionParticipant <- 0
+  for(j in 2:ncol(dataTime)){
+    id <- dataTime[[i,1]]
+    meanPilot <- meanDataPilotTime[[j]]
+    participantData <- dataTime[[i,2]]
+    if(participantData < exclusionRatio){
+      log <- paste("Time for participant ",id, " = ",participantData)
+      print(log)
+      counterExclusionParticipant <- counterExclusionParticipant+1
+    }
+    if(counterExclusionParticipant > 2){
+      listOfIds <- c(listOfIds,id)
+      print("-------> Removed participant")
+      break ;
+    }
+  }
+}
+
+#We now remove the participants we have found with our exclusion criteria from the list of data to be analysed
+if(length(listOfIds)!=0){
+  for(i in 1:length(listOfIds)){
+    id <- listOfIds[[i]]
+    dataDemographics <- dataDemographics[dataDemographics$ids!=id, ]
+    dataTime <- dataTime[dataTime$ids!=id, ]
+    dataAccuracy <- dataAccuracy[dataAccuracy$ids!=id, ]
+  }
+}
+
+
+
+log <- paste("After going through the exclusion criteria, the data still contains",nrow(dataTime),"participants.")
+print(log)
+
+######################
+# Time analysis
+#####################
+
+# Time is log-normally distributed so we can log the results and present them antilogged.
+# So first we log all but the first column
+for (i in 2:length(dataTime)){
+  dataTime[,i] <- log(dataTime[,..i])
+}
+
+juxtaposed <- data.frame()
+threeD <- data.frame()
+cartogram <- data.frame()
+rect <- data.frame()
+analysisdata = c()
+
+juxtaposed <- rbind(juxtaposed,exactMeanCI(dataTime$Question1_juxtaposed))
+juxtaposed <- rbind(juxtaposed,exactMeanCI(dataTime$Question2_juxtaposed))
+juxtaposed <- rbind(juxtaposed,exactMeanCI(dataTime$Question3_juxtaposed))
+juxtaposed <- rbind(juxtaposed,exactMeanCI(dataTime$Question4_juxtaposed))
+juxtaposed <- rbind(juxtaposed,exactMeanCI(dataTime$Question5_juxtaposed))
+
+threeD <- rbind(threeD,exactMeanCI(dataTime$Question1_3D))
+threeD <- rbind(threeD,exactMeanCI(dataTime$Question2_3D))
+threeD <- rbind(threeD,exactMeanCI(dataTime$Question3_3D))
+threeD <- rbind(threeD,exactMeanCI(dataTime$Question4_3D))
+threeD <- rbind(threeD,exactMeanCI(dataTime$Question5_3D))
+
+cartogram <- rbind(cartogram,exactMeanCI(dataTime$Question1_cartogram))
+cartogram <- rbind(cartogram,exactMeanCI(dataTime$Question2_cartogram))
+cartogram <- rbind(cartogram,exactMeanCI(dataTime$Question3_cartogram))
+cartogram <- rbind(cartogram,exactMeanCI(dataTime$Question4_cartogram))
+cartogram <- rbind(cartogram,exactMeanCI(dataTime$Question5_cartogram))
+
+rect <- rbind(rect,exactMeanCI(dataTime$Question1_berthillon))
+rect <- rbind(rect,exactMeanCI(dataTime$Question2_berthillon))
+rect <- rbind(rect,exactMeanCI(dataTime$Question3_berthillon))
+rect <- rbind(rect,exactMeanCI(dataTime$Question4_berthillon))
+rect <- rbind(rect,exactMeanCI(dataTime$Question5_berthillon))
+
+
+for(i in 1:nbQuestions){
+  question <- paste("Q",i, sep="")
+  analysisdata$question = c(analysisdata$question,question,question,question,question)
+  analysisdata$name = c(analysisdata$name,"Berthillon","cartogram","threeD","juxtaposed")
+  analysisdata$pointEstimate = c(analysisdata$pointEstimate,exp(rect[i,1]),exp(cartogram[i,1]),exp(threeD[i,1]),exp(juxtaposed[i,1]))
+  analysisdata$ci.max = c(analysisdata$ci.max,exp(rect[i,3]),exp(cartogram[i,3]), exp(threeD[i,3]), exp(juxtaposed[i,3]))
+  analysisdata$ci.min = c(analysisdata$ci.min,exp(rect[i,2]),exp(cartogram[i,2]), exp(threeD[i,2]), exp(juxtaposed[i,2]))
+}
+
+dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
+colnames(dataToPrint) <- c("technique", "question","mean_time", "lowerBound_CI", "upperBound_CI")
+plot(dataToPrint, xlab="Questions", ylab="Time results", ymax=120)
+figureName <- "Figures/Time.pdf"
+ggsave(figureName)
+
+
+
+# Now we want to look at pairwise differences
+# we use juxtaposed as the baseline, because it has been used in previous papers
+print("Plotting pairwise differences for the time")
+
+datadiff <- dataTime$ids
+for (i in 2:(nbQuestions+1)){
+  index3D <- (i+(nbQuestions))
+  indexcartogram <- (i+(2*nbQuestions))
+  indexRect <- (i+(3*nbQuestions))
+  tmp <- dataTime[,..i] - dataTime[,..index3D] # need the .. to use i
+  colnames(tmp) <- paste(questionList[i-1],"juxtaposed - 3D")
+  datadiff <- cbind(datadiff,tmp)
+  
+  tmp <- dataTime[,..i] - dataTime[,..indexcartogram] # need the .. to use i
+  colnames(tmp) <- paste(questionList[i-1],"juxtaposed - cartogram")
+  datadiff <- cbind(datadiff,tmp)
+  
+  tmp <- dataTime[,..i] - dataTime[,..indexRect] # need the .. to use i
+  colnames(tmp) <- paste(questionList[i-1],"juxtaposed - Berthillon")
+  datadiff <- cbind(datadiff,tmp)
+}
+
+diffJuxta3D <- data.frame()
+diffJuxtaCarto <- data.frame()
+diffJuxtaRect <- data.frame()
+analysisdata2 = c()
+
+nfOfDiffToShow <- 3
+
+for (i in 1:nbQuestions){
+  tmp <- exactMeanCI(datadiff[[2+((i-1)*nfOfDiffToShow)]])
+  diffJuxta3D <- rbind(diffJuxta3D,tmp)
+  tmp <- exactMeanCI(datadiff[[3+((i-1)*nfOfDiffToShow)]])
+  diffJuxtaCarto <- rbind(diffJuxtaCarto,tmp)
+  tmp <- exactMeanCI(datadiff[[4+((i-1)*nfOfDiffToShow)]])
+  diffJuxtaRect <- rbind(diffJuxtaRect,tmp)
+  question <- paste("Q",i, sep="")
+  analysisdata2$question = c(analysisdata2$question,question,question,question)
+  analysisdata2$name = c(analysisdata2$name,"Juxtaposed - Berthillon","Juxtaposed - Cartogram","Juxtaposed - 3D")
+  analysisdata2$pointEstimate = c(analysisdata2$pointEstimate,exp(diffJuxtaRect[i,1]),exp(diffJuxtaCarto[i,1]),exp(diffJuxta3D[i,1]))
+  analysisdata2$ci.max = c(analysisdata2$ci.max,exp(diffJuxtaRect[i,3]), exp(diffJuxtaCarto[i,3]), exp(diffJuxta3D[i,3]))
+  analysisdata2$ci.min = c(analysisdata2$ci.min,exp(diffJuxtaRect[i,2]), exp(diffJuxtaCarto[i,2]), exp(diffJuxta3D[i,2]))
+}
+
+dataToPrint <- data.frame(factor(analysisdata2$name),factor(analysisdata2$question),analysisdata2$pointEstimate, analysisdata2$ci.max, analysisdata2$ci.min)
+colnames(dataToPrint) <- c("technique", "question","mean_time", "lowerBound_CI", "upperBound_CI")
+plotRatio(dataToPrint, ymin = -2, ymax = 2, xlab="Questions", ylab="Time pair-wise differences")
+figureName <- "Figures/TimePairwise.pdf"
+ggsave(figureName)
+
+
+
+######################
+# Accuracy Analysis
+#####################
+
+# First we want to look at the results for each technique per question
+# We group all results onto a single figure.
+
+juxtaposed <- data.frame()
+threeD <- data.frame()
+cartogram <- data.frame()
+rect <- data.frame()
+analysisdata = c()
+
+juxtaposed <- rbind(juxtaposed,bootstrapMeanCI(dataAccuracy$Question1_juxtaposed))
+juxtaposed <- rbind(juxtaposed,bootstrapMeanCI(dataAccuracy$Question2_juxtaposed))
+juxtaposed <- rbind(juxtaposed,bootstrapMeanCI(dataAccuracy$Question3_juxtaposed))
+juxtaposed <- rbind(juxtaposed,bootstrapMeanCI(dataAccuracy$Question4_juxtaposed))
+juxtaposed <- rbind(juxtaposed,bootstrapMeanCI(dataAccuracy$Question5_juxtaposed))
+
+threeD <- rbind(threeD,bootstrapMeanCI(dataAccuracy$Question1_3D))
+threeD <- rbind(threeD,bootstrapMeanCI(dataAccuracy$Question2_3D))
+threeD <- rbind(threeD,bootstrapMeanCI(dataAccuracy$Question3_3D))
+threeD <- rbind(threeD,bootstrapMeanCI(dataAccuracy$Question4_3D))
+threeD <- rbind(threeD,bootstrapMeanCI(dataAccuracy$Question5_3D))
+
+cartogram <- rbind(cartogram,bootstrapMeanCI(dataAccuracy$Question1_cartogram))
+cartogram <- rbind(cartogram,bootstrapMeanCI(dataAccuracy$Question2_cartogram))
+cartogram <- rbind(cartogram,bootstrapMeanCI(dataAccuracy$Question3_cartogram))
+cartogram <- rbind(cartogram,bootstrapMeanCI(dataAccuracy$Question4_cartogram))
+cartogram <- rbind(cartogram,bootstrapMeanCI(dataAccuracy$Question5_cartogram))
+
+rect <- rbind(rect,bootstrapMeanCI(dataAccuracy$Question1_berthillon))
+rect <- rbind(rect,bootstrapMeanCI(dataAccuracy$Question2_berthillon))
+rect <- rbind(rect,bootstrapMeanCI(dataAccuracy$Question3_berthillon))
+rect <- rbind(rect,bootstrapMeanCI(dataAccuracy$Question4_berthillon))
+rect <- rbind(rect,bootstrapMeanCI(dataAccuracy$Question5_berthillon))
+
+
+for(i in 1:nbQuestions){
+  question <- paste("Q",i, sep="")
+  analysisdata$question = c(analysisdata$question,question,question,question,question)
+  analysisdata$name = c(analysisdata$name,"Berthillon","cartogram","threeD","juxtaposed")
+  analysisdata$pointEstimate = c(analysisdata$pointEstimate,rect[i,1], cartogram[i,1], threeD[i,1], juxtaposed[i,1])
+  analysisdata$ci.max = c(analysisdata$ci.max,rect[i,3],cartogram[i,3], threeD[i,3], juxtaposed[i,3])
+  analysisdata$ci.min = c(analysisdata$ci.min,rect[i,2],cartogram[i,2], threeD[i,2], juxtaposed[i,2])
+}
+
+dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
+colnames(dataToPrint) <- c("technique", "question","mean_time", "lowerBound_CI", "upperBound_CI")
+plot(dataToPrint, xlab="Questions", ylab="Accuracy results", ymax=1)
+figureName <- "Figures/Accuracy.pdf"
+ggsave(figureName)
+
+
+
+# Now we want to look at pairwise differences
+# we use juxtaposed as the baseline, because it has been used in previous papers
+print("Plotting pairwise differences for the time")
+
+datadiff <- dataAccuracy$ids
+for (i in 2:(nbQuestions+1)){
+  index3D <- (i+(nbQuestions))
+  indexcartogram <- (i+(2*nbQuestions))
+  indexRect <- (i+(3*nbQuestions))
+  tmp <- dataAccuracy[,..i] - dataAccuracy[,..index3D] # need the .. to use i
+  colnames(tmp) <- paste(questionList[i-1],"juxtaposed - 3D")
+  datadiff <- cbind(datadiff,tmp)
+  
+  tmp <- dataAccuracy[,..i] - dataAccuracy[,..indexcartogram] # need the .. to use i
+  colnames(tmp) <- paste(questionList[i-1],"juxtaposed - cartogram")
+  datadiff <- cbind(datadiff,tmp)
+  
+  tmp <- dataAccuracy[,..i] - dataAccuracy[,..indexRect] # need the .. to use i
+  colnames(tmp) <- paste(questionList[i-1],"juxtaposed - Berthillon")
+  datadiff <- cbind(datadiff,tmp)
+}
+
+diffJuxta3D <- data.frame()
+diffJuxtaCarto <- data.frame()
+diffJuxtaRect <- data.frame()
+analysisdata2 = c()
+
+nfOfDiffToShow <- 3
+
+for (i in 1:nbQuestions){
+  tmp <- exactMeanCI(datadiff[[2+((i-1)*nfOfDiffToShow)]])
+  diffJuxta3D <- rbind(diffJuxta3D,tmp)
+  tmp <- exactMeanCI(datadiff[[3+((i-1)*nfOfDiffToShow)]])
+  diffJuxtaCarto <- rbind(diffJuxtaCarto,tmp)
+  tmp <- exactMeanCI(datadiff[[4+((i-1)*nfOfDiffToShow)]])
+  diffJuxtaRect <- rbind(diffJuxtaRect,tmp)
+  question <- paste("Q",i, sep="")
+  analysisdata2$question = c(analysisdata2$question,question,question,question)
+  analysisdata2$name = c(analysisdata2$name,"Juxtaposed - Berthillon","Juxtaposed - Cartogram","Juxtaposed - 3D")
+  analysisdata2$pointEstimate = c(analysisdata2$pointEstimate, diffJuxtaRect[i,1], diffJuxtaCarto[i,1], diffJuxta3D[i,1])
+  analysisdata2$ci.max = c(analysisdata2$ci.max, diffJuxtaRect[i,3], diffJuxtaCarto[i,3], diffJuxta3D[i,3])
+  analysisdata2$ci.min = c(analysisdata2$ci.min, diffJuxtaRect[i,2], diffJuxtaCarto[i,2], diffJuxta3D[i,2])
+}
+
+dataToPrint <- data.frame(factor(analysisdata2$name),factor(analysisdata2$question),analysisdata2$pointEstimate, analysisdata2$ci.max, analysisdata2$ci.min)
+colnames(dataToPrint) <- c("technique", "question","mean_time", "lowerBound_CI", "upperBound_CI")
+plotDiff(dataToPrint, ymin = -2, ymax = 2, xlab="Questions", ylab="Time pair-wise differences")
+figureName <- "Figures/AccuracyPairwise.pdf"
+ggsave(figureName)
+
+
+######################
+# Ranking analysis
+# We only provide a table in the final paper, so we only need the data
+# We are interested in getting how many times a technique was ranked 1st, 2nd, 3rd and 4th
+# And getting the mean, median and SD
+#####################
+
+
+occurencesJuxtaposed<-table(unlist(dataRanking$Ranking_Juxtaposed))
+meanJuxtaposed <- mean(dataRanking$Ranking_Juxtaposed)
+medianJuxtaposed <- median(dataRanking$Ranking_Juxtaposed)
+sdJuxtaposed <- sd(dataRanking$Ranking_Juxtaposed)
+
+occurencesJuxtaposed
+meanJuxtaposed
+medianJuxtaposed
+sdJuxtaposed
+
+occurences3D<-table(unlist(dataRanking$Ranking_3D))
+mean3D <- mean(dataRanking$Ranking_3D)
+median3D <- median(dataRanking$Ranking_3D)
+sd3D <- sd(dataRanking$Ranking_3D)
+
+occurences3D
+mean3D
+median3D
+sd3D
+
+
+occurencesCartogram<-table(unlist(dataRanking$Ranking_Cartogram))
+meanCartogram <- mean(dataRanking$Ranking_Cartogram)
+medianCartogram <- median(dataRanking$Ranking_Cartogram)
+sdCartogram <- sd(dataRanking$Ranking_Cartogram)
+
+occurencesCartogram
+meanCartogram
+medianCartogram
+sdCartogram
+
+
+occurencesRect<-table(unlist(dataRanking$Ranking_Rect))
+meanRect <- mean(dataRanking$Ranking_Rect)
+medianRect <- median(dataRanking$Ranking_Rect)
+sdRect <- sd(dataRanking$Ranking_Rect)
+
+occurencesRect
+meanRect
+medianRect
+sdRect

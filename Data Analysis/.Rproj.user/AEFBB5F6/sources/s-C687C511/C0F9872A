@@ -1,0 +1,28 @@
+{
+    "id": "C0F9872A",
+    "path": null,
+    "project_path": null,
+    "type": "object_explorer",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1627556213879.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "id": "6b7ae80ae229433fa29ceb2c529b249f",
+        "name": "analysisdata",
+        "title": "analysisdata",
+        "language": "R",
+        "source_window_id": "",
+        "Source": "Source"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 4527808102,
+    "encoding": "",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1627556213879,
+    "read_only": false,
+    "read_only_alternatives": []
+}
