@@ -1,3 +1,12 @@
+################################################################
+# HelperFunctionsPlot.R
+# Code for plotting confidence intervals.
+# "Publishing Visualization Studies as Registered Reports: Expected Benefits and Researchers’ Attitudes"
+# CC-BY Lonni Besancon et al., 2021
+# See https://osf.io/4nrma/
+################################################################
+
+
 plotCI <- function(data, ymin = 0, ymax = 1.0, xlab = "XLAB", ylab = "YLAB") {
   pd <- position_dodge(.6) ### How much to jitter the points on the plot
   g <- ggplot(

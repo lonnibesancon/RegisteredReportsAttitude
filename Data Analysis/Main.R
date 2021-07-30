@@ -1,5 +1,7 @@
 ################################################################
-#
+# Main.R
+# Code for the quantitative data analysis of the submission
+# "Publishing Visualization Studies as Registered Reports: Expected Benefits and Researchers’ Attitudes"
 # CC-BY Lonni Besancon et al., 2021
 # See https://osf.io/4nrma/
 ################################################################
