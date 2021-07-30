@@ -133,15 +133,12 @@ ggsave(figureName)
 
 noPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "0 pre-registration",]
 fewPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "1 to 5 pre-registrations",]
-somePreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "5 to 10 pre-registrations",]
-manyPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "> 10  pre-registrations",]
+manyPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "> 5  pre-registrations",]
 
 noPreregData <- data.frame()
 noPreregData <- bootstrapMeanCI(noPreregs[,indexOfLikertData])
 fewPreregsData <- data.frame()
 fewPreregsData = bootstrapMeanCI(fewPreregs[,indexOfLikertData])
-somePreregsData <- data.frame()
-somePreregsData = bootstrapMeanCI(somePreregs[,indexOfLikertData])
 manyPreregsData <- data.frame()
 manyPreregsData = bootstrapMeanCI(manyPreregs[,indexOfLikertData])
 analysisdata <- c()
@@ -150,7 +147,6 @@ question <- c()
 for (i in (indexOfLikertData+1):6){
   noPreregData <- rbind(noPreregData,(bootstrapMeanCI(noPreregs[,i])))
   fewPreregsData <- rbind(fewPreregsData,(bootstrapMeanCI(fewPreregs[,i])))
-  somePreregsData <- rbind(somePreregsData,(bootstrapMeanCI(somePreregs[,i])))
   manyPreregsData <- rbind(manyPreregsData,(bootstrapMeanCI(manyPreregs[,i])))
 }
 
@@ -158,17 +154,17 @@ questionList <- c("Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to 
 
 for(i in 1:nbLikertItems){
   question <- questionList[i]
-  analysisdata$question = c(analysisdata$question,question,question,question,question)
-  analysisdata$name = c(analysisdata$name,"manyPreregs","somePreregs","fewPreregs","noPreregs")
-  analysisdata$pointEstimate = c(analysisdata$pointEstimate,manyPreregsData[i,1],somePreregsData[i,1],fewPreregsData[i,1],noPreregData[i,1])
-  analysisdata$ci.max = c(analysisdata$ci.max,manyPreregsData[i,3],somePreregsData[i,3], fewPreregsData[i,3],noPreregData[i,3])
-  analysisdata$ci.min = c(analysisdata$ci.min,manyPreregsData[i,2],somePreregsData[i,2], fewPreregsData[i,2],noPreregData[i,2])
+  analysisdata$question = c(analysisdata$question,question,question,question)
+  analysisdata$name = c(analysisdata$name,"manyPreregs","fewPreregs","noPreregs")
+  analysisdata$pointEstimate = c(analysisdata$pointEstimate,manyPreregsData[i,1],fewPreregsData[i,1],noPreregData[i,1])
+  analysisdata$ci.max = c(analysisdata$ci.max,manyPreregsData[i,3], fewPreregsData[i,3],noPreregData[i,3])
+  analysisdata$ci.min = c(analysisdata$ci.min,manyPreregsData[i,2], fewPreregsData[i,2],noPreregData[i,2])
 }
 
 dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
 colnames(dataToPrint) <- c("legend_factor", "y_axis_items","measure", "lowerBound_CI", "upperBound_CI")
 dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = rev(c("Q1 Usefulness", "Q2 Willingness to review", "Q3 Willingness to submit", "Q4 Interest to have RRs")))
-dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("manyPreregs", "somePreregs", "fewPreregs","noPreregs"))
+dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("manyPreregs", "fewPreregs","noPreregs"))
 plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
 
