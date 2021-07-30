@@ -27,13 +27,11 @@ df <- read.csv("../Data/MockUp.csv")
 # Renaming of columns to easier labels
 colnames(df) <- c("Timestamp","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
 
-############### Summary descriptive numbers of survey answers ###############
+############### Summary descriptive numbers to characterize our sample ###############
 vec_count(df$Experience)
 vec_count(df$PreregKnowledge)
 vec_count(df$PreregNumbers)
 vec_count(df$RRKnowledge)
-
-
 
 
 #Replace all Likert values by numerical values which is needed for the rest of the analysis
@@ -133,7 +131,7 @@ ggsave(figureName)
 
 noPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "0 pre-registration",]
 fewPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "1 to 5 pre-registrations",]
-manyPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "> 5  pre-registrations",]
+manyPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "> 5 pre-registrations",]
 
 noPreregData <- data.frame()
 noPreregData <- bootstrapMeanCI(noPreregs[,indexOfLikertData])
