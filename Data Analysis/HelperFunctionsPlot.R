@@ -26,7 +26,8 @@ plotCI <- function(data, ymin = 0, ymax = 1.0, xlab = "XLAB", ylab = "YLAB") {
           panel.grid.major.y = element_blank(), panel.grid.minor.y = element_blank()) +
     theme(axis.title = element_text(face = "bold")) +
     xlab(xlab) +
-    ylab(ylab)
+    ylab(ylab) +
+    guides(color = guide_legend(reverse = TRUE));
   
   g
 }

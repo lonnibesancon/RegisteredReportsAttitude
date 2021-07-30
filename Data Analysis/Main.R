@@ -41,12 +41,6 @@ dfLikertRR <- df[,c("LikertRRHelpful","LikertRRReviewerWilling","LikertRRAuthorW
 dfLikertRR <- lapply(dfLikertRR, factor, levels= c(1:5), ordered = TRUE)
 dfLikertRR <- as.data.frame(dfLikertRR)
 
-dfExperience <- df[c(2)]
-dfExperience <- lapply(dfExperience, factor, levels= c("< 5 years", "5 to 10 years", "> 10 years" ), ordered = TRUE)
-dfExperience <- as.data.frame(dfExperience)
-
-
-#RRData <- df[,substr(names(df), 1,10) == 'RR']
 
 p <- likert(dfLikertRR)
 
