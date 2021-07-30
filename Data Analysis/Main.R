@@ -2,7 +2,7 @@
 # Main.R
 # Code for the quantitative data analysis of the submission
 # "Publishing Visualization Studies as Registered Reports: Expected Benefits and Researchers’ Attitudes"
-# CC-BY Lonni Besancon et al., 2021
+# CC-BY Lonni Besançon et al., 2021
 # See https://osf.io/4nrma/
 ################################################################
 
@@ -21,7 +21,7 @@ df <- read.csv("../Data/MockUp.csv")
 
 
 # Renaming of columns to easier labels
-colnames(df) <- c("Timestamp","Experience","LikertPreregistrationKnowledge","LikertPreregistrationNumbers","Knowledge Of RRs","Q1 Usefulness","RRHelpful","Q2 Willingness to review","RRReviewerWilling","Q3 Willingness to submit","RRAuthorWilling","Q4 Interest to have RRs","RRInterested")
+colnames(df) <- c("Timestamp","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
 
 #Replace all Likert values by numerical values
 df[df == "Very reluctant" ] <- 1
@@ -60,7 +60,7 @@ ggsave(figureName)
 # 2/ Is the attitude towards RRs influenced by the number of already submitted pre-registration?
 
 
-dfLikertRR <- df[,c("Experience","LikertPreregistrationNumbers","Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")]
+dfLikertRR <- df[,c("Experience","PreregNumbers","Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")]
 indexOfLikertData <- 3
 
 #From now on we need to make sure that all values are numerical
@@ -118,10 +118,10 @@ ggsave(figureName)
 ### Analysis #2: Is the attitude towards RRs influenced by the number of already submitted pre-registration?
 
 
-noPreregs <- dfLikertRR[dfLikertRR$LikertPreregistrationNumbers == "0 pre-registration",]
-fewPreregs <- dfLikertRR[dfLikertRR$LikertPreregistrationNumbers == "1 to 5 pre-registrations",]
-somePreregs <- dfLikertRR[dfLikertRR$LikertPreregistrationNumbers == "5 to 10 pre-registrations",]
-manyPreregs <- dfLikertRR[dfLikertRR$LikertPreregistrationNumbers == "> 10  pre-registrations",]
+noPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "0 pre-registration",]
+fewPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "1 to 5 pre-registrations",]
+somePreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "5 to 10 pre-registrations",]
+manyPreregs <- dfLikertRR[dfLikertRR$PreregNumbers == "> 10  pre-registrations",]
 
 noPreregData <- data.frame()
 noPreregData <- bootstrapMeanCI(noPreregs[,indexOfLikertData])

@@ -2,7 +2,7 @@
 # HelperFunctionsPlot.R
 # Code for plotting confidence intervals.
 # "Publishing Visualization Studies as Registered Reports: Expected Benefits and Researchers’ Attitudes"
-# CC-BY Lonni Besancon et al., 2021
+# CC-BY Lonni Besançon et al., 2021
 # See https://osf.io/4nrma/
 ################################################################
 
