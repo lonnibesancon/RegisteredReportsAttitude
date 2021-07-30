@@ -64,7 +64,6 @@ indexOfLikertData <- 3
 #From now on we need to make sure that all values are numerical
 for (i in indexOfLikertData:(indexOfLikertData+3)){
   dfLikertRR[,i] <- as.numeric(dfLikertRR[,i])
-  #dfLikertRR[,i] <- transform(dfLikertRR[,i], char = as.numeric(char))
 }
 
 
