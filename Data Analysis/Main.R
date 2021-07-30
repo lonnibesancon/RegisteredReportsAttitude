@@ -14,7 +14,6 @@ source("HelperFunctionsCIs.R")
 source("HelperFunctionsPlot.R")
 
 
-
 #Reading csv file
 df <- read.csv("../Data/MockUp.csv")
 
@@ -42,12 +41,15 @@ dfLikertRR <- lapply(dfLikertRR, factor, levels= c(1:5), ordered = TRUE)
 dfLikertRR <- as.data.frame(dfLikertRR)
 
 
-p <- likert(dfLikertRR)
+p <- (likert(dfLikertRR))
 
 figureName <- "../Figures/LikertPlots.pdf"
-pdf(figureName)
+#pdf(figureName, width = paneViewerWidth, height = paneViewerHeight)
+#pdf(figureName)
 plot(p)
-dev.off()
+ggsave(figureName)
+#dev.copy(pdf,figureName, width = paneViewerWidth, height = paneViewerHeight)
+#dev.off()
 
 
 
