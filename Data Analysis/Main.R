@@ -27,7 +27,16 @@ df <- read.csv("../Data/MockUp.csv")
 # Renaming of columns to easier labels
 colnames(df) <- c("Timestamp","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
 
-#Replace all Likert values by numerical values
+############### Summary descriptive numbers of survey answers ###############
+vec_count(df$Experience)
+vec_count(df$PreregKnowledge)
+vec_count(df$PreregNumbers)
+vec_count(df$RRKnowledge)
+
+
+
+
+#Replace all Likert values by numerical values which is needed for the rest of the analysis
 df[df == "Very reluctant" ] <- 1
 df[df == "Not helpful at all"] <- 1
 df[df == "Reluctant" ] <- 2
@@ -38,13 +47,6 @@ df[df == "Eager"] <- 4
 df[df == "Very helpful"] <- 4
 df[df == "Very eager"] <- 5
 df[df == "Extremely helpful"] <- 5
-
-
-############### Summary descriptive numbers of survey answers ###############
-vec_count(df$Experience)
-vec_count(df$PreregKnowledge)
-vec_count(df$PreregNumbers)
-vec_count(df$RRKnowledge)
 
 
 ############### Likert Plots ###############
