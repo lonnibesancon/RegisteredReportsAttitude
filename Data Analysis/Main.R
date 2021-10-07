@@ -27,7 +27,7 @@ source("HelperFunctionsPlot.R")
 df <- read.csv("../Data/MockUp.csv", stringsAsFactors = F)
 
 # Renaming of columns to easier labels
-colnames(df) <- c("Timestamp","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
+colnames(df) <- c("Timestamp","Acknowledge","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","RRKnowledgeComparison","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
 
 ############### Summary descriptive numbers to characterize our sample ###############
 vec_count(df$Experience)
@@ -39,14 +39,18 @@ vec_count(df$RRKnowledge)
 #Replace all Likert values by numerical values which is needed for the rest of the analysis
 df[df == "Very reluctant" ] <- 1
 df[df == "Not helpful at all"] <- 1
+df[df == "Not interested at all" ] <- 1
 df[df == "Reluctant" ] <- 2
 df[df == "Somewhat helpful"] <- 2
+df[df == "Rather not interested"] <- 2
 df[df == "Neutral"] <- 3
 df[df == "Helpful"] <- 3
 df[df == "Eager"] <- 4
 df[df == "Very helpful"] <- 4
+df[df == "Somehow interested"] <- 4
 df[df == "Very eager"] <- 5
 df[df == "Extremely helpful"] <- 5
+df[df == "Very interested"] <- 5
 
 
 ############### Likert Plots ###############
@@ -170,3 +174,43 @@ plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
 figureName <- "../Figures/PreregsLevels.pdf"
 ggsave(figureName)
+
+
+############### Descriptive stats bit on the knowledge about Preregs and RR as well as experience ###############
+# Generates a sentence to copy paste directly in the paper
+
+##' Function that generates the descriptive statistics that we will report in the paper
+##' @param input_df the dataframe with a count for each possible value
+##' @param nb_participants the number of total participants to generate the percentage
+##' @return a string that can be put in the paper
+generate_string_from_count <- function(input_df,nb_participants){
+  size <- nrow(input_df)
+  print(size)
+  return_string <- ""
+  nb_participants <- strtoi(nb_participants)
+  for(i in 1:size){
+    answer_string <- input_df[i,1]
+    answer_value <- strtoi(input_df[i,2])
+    percentage <- round((answer_value/nb_participants*100),1)
+    return_string <- paste0(return_string," ``",answer_string,"'' (x ",answer_value,", ",percentage,"%),")
+  }
+  return_string <- substr(return_string,1,nchar(return_string)-1)
+  return_string <- paste0(return_string,".")
+  return (return_string)
+
+}
+
+nb_participants <- nrow(df)
+Prereg_knowledge_count <- vec_count(df$PreregKnowledge)
+RR_knowledge_count <- vec_count(df$RRKnowledge)
+RR_knowledge_comparison_count <- vec_count(df$RRKnowledgeComparison)
+nb_preregs_count <- vec_count(df$PreregNumbers)
+experience_count <- vec_count(df$Experience)
+
+print(paste0(nb_participants," participants responded to our survey."))
+print(generate_string_from_count(experience_count,nb_participants))
+print(generate_string_from_count(RR_knowledge_count,nb_participants))
+print(generate_string_from_count(RR_knowledge_comparison_count,nb_participants))
+print(generate_string_from_count(Prereg_knowledge_count,nb_participants))
+
+
