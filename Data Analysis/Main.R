@@ -6,6 +6,8 @@
 # See https://osf.io/4nrma/
 ################################################################
 
+rm(list=ls())
+
 #Check that "likert" is installed
 if(!require(likert)){
   install.packages("likert")
@@ -22,7 +24,7 @@ source("HelperFunctionsPlot.R")
 
 
 #Reading csv file
-df <- read.csv("../Data/MockUp.csv")
+df <- read.csv("../Data/MockUp.csv", stringsAsFactors = F)
 
 # Renaming of columns to easier labels
 colnames(df) <- c("Timestamp","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
@@ -168,9 +170,3 @@ plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
 figureName <- "../Figures/PreregsLevels.pdf"
 ggsave(figureName)
-
-
-
-
-
-
