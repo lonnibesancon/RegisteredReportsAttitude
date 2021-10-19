@@ -27,7 +27,7 @@ source("HelperFunctionsPlot.R")
 df <- read.csv("../Data/Responses.tsv", sep = '\t',quote = "", stringsAsFactors = F)
 
 # Renaming of columns to easier labels
-colnames(df) <- c("Timestamp","Acknowledge","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","RRKnowledgeComparison","Q1 Usefulness","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
+colnames(df) <- c("Timestamp","Acknowledge","Experience","PreregKnowledge","PreregNumbers","RRKnowledge","RRKnowledgeComparison","Q1 Usefulness of early review","Q1 comments","Q2 Willingness to review","Q2 comments","Q3 Willingness to submit","Q3 comments","Q4 Interest to have RRs","Q4 comments")
 
 ############### Summary descriptive numbers to characterize our sample ###############
 vec_count(df$Experience)
@@ -58,7 +58,7 @@ df[df == "Very interested"] <- 5
 
 
 #Create the factors for Likert Plots
-dfLikertRR <- df[,c("Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")]
+dfLikertRR <- df[,c("Q1 Usefulness of early review","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")]
 dfLikertRR <- lapply(dfLikertRR, factor, levels= c(1:5), ordered = TRUE)
 dfLikertRR <- as.data.frame(dfLikertRR)
 dfLikertRR <- dfLikertRR[,4:1]
@@ -66,7 +66,7 @@ dfLikertRR <- dfLikertRR[,4:1]
 #We create and save the plot as an image
 p <- (likert(dfLikertRR))
 figureName <- "../Figures/LikertPlots.pdf"
-plot(p,group.order = c("Q1.Usefulness", "Q2.Willingness.to.review", "Q3.Willingness.to.submit", "Q4.Interest.to.have.RRs"))
+plot(p,group.order = c("Q1.Usefulness.of.early.review", "Q2.Willingness.to.review", "Q3.Willingness.to.submit", "Q4.Interest.to.have.RRs"))
 ggsave(figureName)
 
 
@@ -77,7 +77,7 @@ ggsave(figureName)
 # 2/ Is the attitude towards RRs influenced by the number of already submitted pre-registration?
 
 
-dfLikertRR <- df[,c("Experience","PreregNumbers","Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")]
+dfLikertRR <- df[,c("Experience","PreregNumbers","Q1 Usefulness of early review","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")]
 indexOfLikertData <- 3
 
 #From now on we need to make sure that all values are numerical
@@ -111,7 +111,7 @@ for (i in (indexOfLikertData+1):6){
   seniorData <- rbind(seniorData,(bootstrapMeanCI(seniorResearcher[,i])))
 }
 
-questionList <- c("Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")
+questionList <- c("Q1 Usefulness of early review","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")
 
 for(i in 1:nbLikertItems){
   question <- questionList[i]
@@ -124,7 +124,7 @@ for(i in 1:nbLikertItems){
 
 dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
 colnames(dataToPrint) <- c("legend_factor", "y_axis_items","measure", "lowerBound_CI", "upperBound_CI")
-dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = rev(c("Q1 Usefulness", "Q2 Willingness to review", "Q3 Willingness to submit", "Q4 Interest to have RRs")))
+dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = rev(c("Q1 Usefulness of early review", "Q2 Willingness to review", "Q3 Willingness to submit", "Q4 Interest to have RRs")))
 dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("> 10 years in the field","5 to 10 years in the field","< 5 years in the field"))
 plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
@@ -154,7 +154,7 @@ for (i in (indexOfLikertData+1):6){
   manyPreregsData <- rbind(manyPreregsData,(bootstrapMeanCI(manyPreregs[,i])))
 }
 
-questionList <- c("Q1 Usefulness","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")
+questionList <- c("Q1 Usefulness of early review","Q2 Willingness to review","Q3 Willingness to submit","Q4 Interest to have RRs")
 
 for(i in 1:nbLikertItems){
   question <- questionList[i]
@@ -167,7 +167,7 @@ for(i in 1:nbLikertItems){
 
 dataToPrint <- data.frame(factor(analysisdata$name),factor(analysisdata$question),analysisdata$pointEstimate, analysisdata$ci.max, analysisdata$ci.min)
 colnames(dataToPrint) <- c("legend_factor", "y_axis_items","measure", "lowerBound_CI", "upperBound_CI")
-dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = rev(c("Q1 Usefulness", "Q2 Willingness to review", "Q3 Willingness to submit", "Q4 Interest to have RRs")))
+dataToPrint$y_axis_items <- factor(dataToPrint$y_axis_items, levels = rev(c("Q1 Usefulness of early review", "Q2 Willingness to review", "Q3 Willingness to submit", "Q4 Interest to have RRs")))
 dataToPrint$legend_factor <- factor(dataToPrint$legend_factor, levels = c("Submitted 6+ pre-registrations", "Submitted 1 to 5 pre-registrations","No pre-registration submitted"))
 plotCI(dataToPrint, xlab="Questions", ylab="", ymax=5)
 
